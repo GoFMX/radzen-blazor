@@ -71,6 +71,12 @@ namespace Radzen.Blazor
         [Parameter]
         public RenderFragment Tabs { get; set; }
 
+        /// <summary>
+        /// Validates if attempted selection of the tab with the given index can proceed.
+        /// </summary>
+        [Parameter]
+        public Func<int, bool> TabSelectionValidator { get; set; }
+
         List<RadzenTabsItem> tabs = new List<RadzenTabsItem>();
 
         /// <summary>
@@ -156,7 +162,12 @@ namespace Radzen.Blazor
 
         internal async Task SelectTab(RadzenTabsItem tab, bool raiseChange = false)
         {
-            selectedIndex = IndexOf(tab);
+            var attemptedIndex = IndexOf(tab);
+
+            if (!(TabSelectionValidator?.Invoke(attemptedIndex) ?? true))
+                return;
+
+            selectedIndex = attemptedIndex;
 
             SetFocusedIndex();
 
@@ -253,10 +264,10 @@ namespace Radzen.Blazor
 
         internal async System.Threading.Tasks.Task SelectTabOnClient(RadzenTabsItem tab)
         {
-            var index = IndexOf(tab);
-            if (index != selectedIndex)
+            var attemptedIndex = IndexOf(tab);
+            if (attemptedIndex != selectedIndex && (TabSelectionValidator?.Invoke(attemptedIndex) ?? true))
             {
-                selectedIndex = index;
+                selectedIndex = attemptedIndex;
 
                 SetFocusedIndex();
 
