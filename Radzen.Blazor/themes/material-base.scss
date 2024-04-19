@@ -465,7 +465,7 @@ $steps-number-color: var(--rz-text-contrast-color) !default;
       display: flex;
       align-items: center;
       &:after {
-        display: 'block';
+        display: block;
         content: '';
         flex: auto;
         height: 1px;
