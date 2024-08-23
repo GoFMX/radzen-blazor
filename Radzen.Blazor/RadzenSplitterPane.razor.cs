@@ -23,7 +23,7 @@ namespace Radzen.Blazor
 
         internal bool IsLastResizable
         {
-            get { return Splitter.Panes.Last(o => o.Resizable && !o.GetCollapsed()) == this; }
+            get { return Splitter.Panes.LastOrDefault(o => o.Resizable && !o.GetCollapsed()) == this; }
         }
 
         internal bool IsLast => Splitter.Panes.Count - 1 == Index;
@@ -260,7 +260,7 @@ namespace Radzen.Blazor
 
                 var rect = await JSRuntime.InvokeAsync<Rect>("Radzen.clientRect", GetId() + "-resize");
 
-                await Splitter.StartResize(new MouseEventArgs()
+                await Splitter.StartResize(new PointerEventArgs()
                 {
                     ClientX = rect.Left,
                     ClientY = rect.Top

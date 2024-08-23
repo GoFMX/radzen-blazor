@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using System.Collections.Generic;
+using System;
 
 namespace Radzen.Blazor
 {
@@ -67,11 +68,55 @@ namespace Radzen.Blazor
         [Parameter]
         public string FilterPlaceholder { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the row render callback. Use it to set row attributes.
+        /// </summary>
+        /// <value>The row render callback.</value>
+        [Parameter]
+        public Action<DropDownItemRenderEventArgs<TValue>> ItemRender { get; set; }
+
+        internal DropDownItemRenderEventArgs<TValue> ItemAttributes(RadzenDropDownItem<TValue> item)
+        {
+            var disabled = !string.IsNullOrEmpty(DisabledProperty) ? GetItemOrValueFromProperty(item.Item, DisabledProperty) : false;
+
+            var args = new DropDownItemRenderEventArgs<TValue>() 
+            { 
+                DropDown = this, 
+                Item = item.Item, 
+                Disabled = disabled is bool ? (bool)disabled : false,
+            };
+
+            if (ItemRender != null)
+            {
+                ItemRender(args);
+            }
+
+            return args;
+        }
+
         private async Task OnFocus(Microsoft.AspNetCore.Components.Web.FocusEventArgs args)
         {
             if (OpenOnFocus)
             {
                 await OpenPopup("Enter", false);
+            }
+        }
+        internal override async Task ClosePopup(string key)
+        {
+            bool of = false;
+
+            if (key == "Enter")
+            {
+                of = OpenOnFocus;
+                OpenOnFocus = false;
+            }
+
+            await JSRuntime.InvokeVoidAsync("Radzen.closePopup", PopupID);
+
+            if (key == "Enter")
+            {
+                await JSRuntime.InvokeVoidAsync("Radzen.focusElement", UniqueID);
+                OpenOnFocus = of;
             }
         }
 
@@ -149,6 +194,17 @@ namespace Radzen.Blazor
         private bool visibleChanged = false;
         private bool disabledChanged = false;
         private bool firstRender = true;
+
+        /// <inheritdoc />
+        protected override Task SelectAll()
+        {
+            if (ReadOnly)
+            {
+                return Task.CompletedTask;
+            }
+
+            return base.SelectAll();
+        }
 
         /// <inheritdoc />
         public override async Task SetParametersAsync(ParameterView parameters)
@@ -274,7 +330,7 @@ namespace Radzen.Blazor
             }
         }
 
-        internal async Task ClosePopup()
+        internal async Task PopupClose()
         {
             await JSRuntime.InvokeVoidAsync("Radzen.closePopup", PopupID);
         }
