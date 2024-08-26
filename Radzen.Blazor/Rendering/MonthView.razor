@@ -51,7 +51,7 @@
                         @if (item.Start >= start && item.Start <= end)
                         {
                             <Appointment Data=@item Top=@top Left=@left Width=@width Height=@height Click=@OnAppointmentClick
-                                CssClass="@(CurrentDate >= start && CurrentDate <= end && object.Equals(currentAppointments?.ElementAtOrDefault(currentAppointment),item) ? "rz-state-focused" : "")" 
+                                CssClass="@(CurrentDate >= start && CurrentDate <= end && object.Equals(currentAppointments?.ElementAtOrDefault(currentAppointment),item) ? "rz-state-focused" : "")"
                                 DragStart=@OnAppointmentDragStart />
                         }
                         else if (start == date)
@@ -157,9 +157,7 @@
     async Task OnAppointmentClick(AppointmentData data)
     {
         await Scheduler.SelectAppointment(data);
-#if NET5_0_OR_GREATER
         await contentView.FocusAsync();
-#endif
     }
 
     private AppointmentData[] AppointmentsInSlot(DateTime start, DateTime end)
@@ -178,7 +176,7 @@
 
         if (!preventDefault)
         {
-            await DialogService.OpenAsync(date.ToShortDateString(), ds =>
+            await DialogService.OpenAsync(date.ToString("d", Scheduler.Culture), ds =>
                 @<div class="rz-event-list">
                     <CascadingValue Value=@Scheduler>
                         @foreach(var item in appointments)
@@ -236,9 +234,7 @@
         else if (key == "Enter")
         {
             await OnSlotClick(CurrentDate);
-#if NET5_0_OR_GREATER
             await contentView.FocusAsync();
-#endif
 
             preventKeyPress = true;
         }

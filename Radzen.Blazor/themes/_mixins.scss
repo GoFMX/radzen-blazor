@@ -50,6 +50,7 @@
       background-position: center;
       background: radial-gradient(circle, currentColor 1%, transparent 1%) center/15000%;
       transition: background-size 0.8s, opacity 0.8s;
+      pointer-events: none;
     }
   
     &:not(.rz-state-disabled):active {
@@ -66,10 +67,18 @@
     transition: background-size 0.8s;
     background: radial-gradient(circle, transparent 1%, $ripple-background 1%)  center/15000%;
 
-    &:active {
+    &:not(.rz-state-disabled):active {
         background-color: $ripple-background;
         transition: background-size 0s;
         background-size: 100%;
+    }
+  }
+}
+
+@mixin rz-hover-state {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
     }
   }
 }
