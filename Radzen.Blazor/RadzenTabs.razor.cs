@@ -268,7 +268,7 @@ namespace Radzen.Blazor
             if (attemptedIndex != selectedIndex && (TabSelectionValidator?.Invoke(attemptedIndex) ?? true))
             {
                 selectedIndex = attemptedIndex;
-
+                previousSelectedIndex = selectedIndex;
                 SetFocusedIndex();
 
                 await JSRuntime.InvokeVoidAsync("Radzen.selectTab", $"{GetId()}-tabpanel-{selectedIndex}", selectedIndex);
