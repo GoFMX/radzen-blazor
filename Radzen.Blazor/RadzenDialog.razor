@@ -28,7 +28,7 @@
                 }
             </div>
         }
-        <div class="rz-dialog-side-content" style="@sideDialogOptions.Style">
+        <div class="@GetSideDialogContentCssClass()" style="@sideDialogOptions.Style">
             @sideDialogContent
         </div>
     </aside>
@@ -136,6 +136,11 @@
     string GetSideDialogCssClass()
     {
         return $"rz-dialog-side rz-dialog-side-position-{sideDialogOptions.Position.ToString().ToLower()} {sideDialogOptions.CssClass}";
+    }
+
+    string GetSideDialogContentCssClass()
+    {
+        return $"rz-dialog-side-content {sideDialogOptions.ContentCssClass}";
     }
 
     string GetSideDialogStyle()
